@@ -8,6 +8,6 @@ public class ThymeleafTestController {
 
     @GetMapping("/test-thymeleaf")
     public String test() {
-        return "test"; // Назва HTML-файлу без розширення
+        return "test";
     }
 }

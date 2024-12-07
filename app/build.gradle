@@ -1,0 +1,31 @@
+plugins {
+    id 'org.springframework.boot' version '3.1.0'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id 'java'
+    id 'application'  // Для створення виконуваного додатку
+}
+
+repositories {
+    mavenCentral()  // Вказуємо репозиторій Maven Central
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.h2:h2'  // Додаємо залежність для H2
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+application {
+    mainClass = 'com.example.todo.TodoListApplication'  // Вкажіть свій головний клас
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()  // Для використання JUnit 5
+}

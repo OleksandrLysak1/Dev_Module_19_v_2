@@ -1,46 +1,44 @@
 package com.example.todo.service;
 
 import com.example.todo.model.Note;
+import com.example.todo.repository.NoteRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
+import java.util.NoSuchElementException;
 
-    @Service
-    public class NoteService {
-        private Map<Long, Note> notes = new HashMap<>();
-        private AtomicLong idGenerator = new AtomicLong();
+@Service
+public class NoteService {
+    private final NoteRepository noteRepository;
 
-        public List<Note> listAll() {
-            return new ArrayList<>(notes.values());
-        }
-
-        public Note add(Note note) {
-            long id = idGenerator.incrementAndGet();
-            note.setId(id);
-            notes.put(id, note);
-            return note;
-        }
-
-        public void deleteById(long id) {
-            if (!notes.containsKey(id)) {
-                throw new NoSuchElementException("Note not found");
-            }
-            notes.remove(id);
-        }
-
-        public void update(Note note) {
-            if (!notes.containsKey(note.getId())) {
-                throw new NoSuchElementException("Note not found");
-            }
-            notes.put(note.getId(), note);
-        }
-
-        public Note getById(long id) {
-            if (!notes.containsKey(id)) {
-                throw new NoSuchElementException("Note not found");
-            }
-            return notes.get(id);
-        }
+    public NoteService(NoteRepository noteRepository) {
+        this.noteRepository = noteRepository;
     }
 
+    public List<Note> listAll() {
+        return noteRepository.findAll();
+    }
+
+    public Note add(Note note) {
+        return noteRepository.save(note);
+    }
+
+    public void deleteById(long id) {
+        if (!noteRepository.existsById(id)) {
+            throw new NoSuchElementException("Note not found");
+        }
+        noteRepository.deleteById(id);
+    }
+
+    public void update(Note note) {
+        if (!noteRepository.existsById(note.getId())) {
+            throw new NoSuchElementException("Note not found");
+        }
+        noteRepository.save(note);
+    }
+
+    public Note getById(long id) {
+        return noteRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Note not found"));
+    }
+}
