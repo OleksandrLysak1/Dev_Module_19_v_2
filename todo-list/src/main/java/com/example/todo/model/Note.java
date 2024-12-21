@@ -1,36 +1,24 @@
 package com.example.todo.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Table;
-import org.springframework.data.annotation.Id;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "note")
 public class Note {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Title is required")
+    @Size(max = 255, message = "Title cannot exceed 255 characters")
     private String title;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Content is required")
     private String content;
 
-    public Note() {
-    }
-
-    public Note(String title, String content) {
-        this.title = title;
-        this.content = content;
-    }
-
+    // Гетери та сетери
     public Long getId() {
         return id;
     }
@@ -53,14 +41,5 @@ public class Note {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    @Override
-    public String toString() {
-        return "Note{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                '}';
     }
 }

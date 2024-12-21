@@ -1,39 +1,60 @@
-package com.example.todo_list.controller;
+package com.example.todo.controller;
 
-import com.example.todo.service.NoteService;
 import com.example.todo.model.Note;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import com.example.todo.service.NoteService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/notes")
 public class NoteController {
 
-    @Autowired
-    private NoteService noteService;
+    private final NoteService noteService;
 
-    @GetMapping("/note/list")
-    public String listNotes(Model model) {
-        model.addAttribute("notes", noteService.listAll());
-        return "note_list";
+    public NoteController(NoteService noteService) {
+        this.noteService = noteService;
     }
 
-    @PostMapping("/note/delete")
-    public String deleteNote(@RequestParam Long id) {
-        noteService.deleteById(id);
-        return "redirect:/note/list";
+    @GetMapping
+    public List<Note> getAllNotes() {
+        return noteService.findAll();
     }
 
-    @GetMapping("/note/edit")
-    public String editNoteForm(@RequestParam Long id, Model model) {
-        model.addAttribute("note", noteService.getById(id));
-        return "note_edit";
+    @GetMapping("/{id}")
+    public ResponseEntity<Note> getNoteById(@PathVariable Long id) {
+        return noteService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/note/edit")
-    public String editNote(@ModelAttribute Note note) {
-        noteService.update(note);
-        return "redirect:/note/list";
+    @PostMapping
+    public Note createNote(@Valid @RequestBody Note note) {
+        return noteService.save(note);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Note> updateNote(
+            @PathVariable Long id,
+            @Valid @RequestBody Note updatedNote) {
+        return noteService.findById(id)
+                .map(existingNote -> {
+                    existingNote.setTitle(updatedNote.getTitle());
+                    existingNote.setContent(updatedNote.getContent());
+                    noteService.save(existingNote);
+                    return ResponseEntity.ok(existingNote);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteNoteById(@PathVariable Long id) {
+        if (noteService.findById(id).isPresent()) {
+            noteService.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }
