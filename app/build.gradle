@@ -2,22 +2,25 @@ plugins {
     id 'org.springframework.boot' version '3.1.0'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'java'
-    id 'application'  // Для створення виконуваного додатку
+    id 'application'
 }
 
 repositories {
-    mavenCentral()  // Вказуємо репозиторій Maven Central
+    mavenCentral()
+    maven { url "https://repo.maven.apache.org/maven2" } // Альтернативний доступ до Maven Central
 }
+
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.h2:h2'  // Додаємо залежність для H2
+    implementation 'com.h2database:h2:2.2.220' // Замініть на актуальну версію
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
+
 application {
-    mainClass = 'com.example.todo.TodoListApplication'  // Вкажіть свій головний клас
+    mainClass = 'com.example.todo.TodoListApplication'
 }
 
 java {
@@ -27,5 +30,5 @@ java {
 }
 
 tasks.named('test') {
-    useJUnitPlatform()  // Для використання JUnit 5
+    useJUnitPlatform()
 }
